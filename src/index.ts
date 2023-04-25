@@ -21,7 +21,7 @@ export function activate() {
   }
   const decorationType = vscode.window.createTextEditorDecorationType(style)
   vscode.languages.registerHoverProvider('*', {
-    provideHover(document, position) {
+    provideHover() {
       if (!secret || !appid)
         return
       const editor = vscode.window.activeTextEditor
@@ -31,53 +31,29 @@ export function activate() {
         clearTimeout(timer)
       // 移除样式
       vscode.window.activeTextEditor?.setDecorations(decorationType, [])
-      const realRangeMap: any = []
       const selection = editor.selection
-      let wordRange = new vscode.Range(selection.start, selection.end) as any
-      let selectedText = editor.document.getText(wordRange)
-      if (!selectedText) {
-        wordRange = document.getWordRangeAtPosition(position) as any
-        const lineNumber = position.line
-        const line = wordRange.c.c
-        const lineText = document.lineAt(lineNumber).text
-        let word = document.getText(wordRange)
-        let matcher = null
-        const wholeReg = new RegExp(`["'$@¥%*~()（）;-!.,，。！；“‘～\\s\\w\\u4e00-\\u9fa5]*${word}["'$@¥%*~()（）;-!.,，。！；“‘～\\s\\w\\u4e00-\\u9fa5]*`, 'g')
-        for (const match of lineText.matchAll(wholeReg)) {
-          const { index } = match
-          const pos = index! + match[0].indexOf(word)
-          if (pos === wordRange?.c?.e) {
-            matcher = match
-            realRangeMap.push({
-              content: match[0],
-              range: new vscode.Range(
-                new vscode.Position(line, index!),
-                new vscode.Position(line, index! + match[0].length),
-              ),
-            })
-            break
-          }
-        }
-        if (matcher)
-          word = matcher[0]
-        selectedText = word
-      }
-      else {
-        realRangeMap.push({
+      const wordRange = new vscode.Range(selection.start, selection.end) as any
+      const selectedText = editor.document.getText(wordRange)
+      if (!selectedText)
+        return
+
+      const realRangeMap: any = [
+        {
           content: selectedText,
           range: wordRange,
-        })
-      }
+        },
+      ]
 
       if (!selectedText)
         return
+      const isEn = hasNoChinese(selectedText)
+
       if (cacheMap.has(selectedText)) {
         const cacheText = cacheMap.get(selectedText)
         if (!cacheText)
           return
-        return setStyle(editor, realRangeMap, cacheText)
+        return setStyle(isEn, editor, realRangeMap, selectedText, cacheText)
       }
-      const isEn = hasNoChinese(selectedText)
       return new Promise((resolve) => {
         timer = setTimeout(() => {
           translate(selectedText, {
@@ -88,16 +64,17 @@ export function activate() {
             salt: '1435660288',
           }).then((translated) => {
             cacheMap.set(selectedText, translated)
-            resolve(setStyle(editor, realRangeMap, translated as string))
+            resolve(setStyle(isEn, editor, realRangeMap, selectedText, translated as string))
           })
         }, 200)
       })
     },
   })
-  function setStyle(editor: vscode.TextEditor, realRangeMap: any[], translated: string) {
+  function setStyle(isEn: boolean, editor: vscode.TextEditor, realRangeMap: any[], selectedText: string, translated: string) {
     editor.edit(() => editor.setDecorations(decorationType, realRangeMap.map((item: any) => item.range)))
     md.value = ''
-    md.appendMarkdown(translated)
+    md.appendMarkdown(`${isEn ? '中文翻译' : '英文翻译'}:\n`)
+    md.appendMarkdown(`\n<a href="https://translate.google.com/?hl=zh-CN&sl=auto&tl=${isEn ? 'zh-CN' : 'en'}&text=${encodeURIComponent(selectedText)}&op=translate">${translated}</a>`)
     return new vscode.Hover(md)
   }
 

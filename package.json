@@ -1,7 +1,7 @@
 {
   "publisher": "simonhe",
   "name": "vscode-translate",
-  "displayName": "vscode-translate",
+  "displayName": "vscode translate",
   "version": "0.0.0",
   "packageManager": "pnpm@8.1.1",
   "description": "vscode-translate",
@@ -23,7 +23,7 @@
     "Other"
   ],
   "main": "./dist/index.js",
-  "icon": "icon.png",
+  "icon": "assets/kv.png",
   "files": [
     "dist"
   ],

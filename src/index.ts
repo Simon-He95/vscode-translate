@@ -35,7 +35,6 @@ export function activate() {
       const selection = editor.selection
       let wordRange = new vscode.Range(selection.start, selection.end) as any
       let selectedText = editor.document.getText(wordRange)
-
       if (!selectedText) {
         wordRange = document.getWordRangeAtPosition(position) as any
         const lineNumber = position.line
@@ -43,7 +42,7 @@ export function activate() {
         const lineText = document.lineAt(lineNumber).text
         let word = document.getText(wordRange)
         let matcher = null
-        const wholeReg = new RegExp(`["'$@¥%*~()（）;!.,，。！；“‘～\s\w\\u4e00-\\u9fa5]*${word}["'$@¥%*~()（）;!.,，。！；“‘～\s\w\\u4e00-\\u9fa5]*`, 'g')
+        const wholeReg = new RegExp(`["'$@¥%*~()（）;-!.,，。！；“‘～\\s\\w\\u4e00-\\u9fa5]*${word}["'$@¥%*~()（）;-!.,，。！；“‘～\\s\\w\\u4e00-\\u9fa5]*`, 'g')
         for (const match of lineText.matchAll(wholeReg)) {
           const { index } = match
           const pos = index! + match[0].indexOf(word)
@@ -62,6 +61,12 @@ export function activate() {
         if (matcher)
           word = matcher[0]
         selectedText = word
+      }
+      else {
+        realRangeMap.push({
+          content: selectedText,
+          range: wordRange,
+        })
       }
 
       if (!selectedText)

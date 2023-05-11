@@ -3,6 +3,7 @@ import translate from '@simon_he/translate'
 import { cacheMap } from './utils'
 
 export function activate() {
+  let copyedText = ''
   const { GenerateNames_Secret, GenerateNames_Appid } = process.env
   const { _secret, _appid, dark = {}, light = {} } = vscode.workspace.getConfiguration('translate') || {}
   const secret = GenerateNames_Secret || _secret
@@ -70,11 +71,18 @@ export function activate() {
       })
     },
   })
+
+  vscode.commands.registerCommand('extension.copyText', () => {
+    vscode.env.clipboard.writeText(copyedText)
+    vscode.window.showInformationMessage('复制成功')
+  })
   function setStyle(isEn: boolean, editor: vscode.TextEditor, realRangeMap: any[], selectedText: string, translated: string) {
     editor.edit(() => editor.setDecorations(decorationType, realRangeMap.map((item: any) => item.range)))
     md.value = ''
-    md.appendMarkdown(`${isEn ? '中文翻译' : '英文翻译'}:\n`)
+    copyedText = translated
+    md.appendMarkdown(`${isEn ? '中文翻译' : '英文翻译'}: \n`)
     md.appendMarkdown(`\n<a href="https://translate.google.com/?hl=zh-CN&sl=auto&tl=${isEn ? 'zh-CN' : 'en'}&text=${encodeURIComponent(selectedText)}&op=translate">${translated}</a>`)
+    md.appendMarkdown('&nbsp;&nbsp;&nbsp;&nbsp;<a href="command:extension.copyText"><img width="14" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAQCAYAAADwMZRfAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAUGVYSWZNTQAqAAAACAACARIAAwAAAAEAAQAAh2kABAAAAAEAAAAmAAAAAAADoAEAAwAAAAEAAQAAoAIABAAAAAEAAAARoAMABAAAAAEAAAAQAAAAAKEulK8AAAFZaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJYTVAgQ29yZSA2LjAuMCI+CiAgIDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CiAgICAgIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiCiAgICAgICAgICAgIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIj4KICAgICAgICAgPHRpZmY6T3JpZW50YXRpb24+MTwvdGlmZjpPcmllbnRhdGlvbj4KICAgICAgPC9yZGY6RGVzY3JpcHRpb24+CiAgIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+Chle4QcAAACxSURBVDgRrZNRDsMgDENh2r3KTrb0ZM1Oxp4Rk/YRGKtqyaWNIUkNpBSg1mrwgL9gWp6DHEkriTt8RXqPbRpzzo9wTi9vodiDzFG3KpZus4mr2jVJPm2pNXCsVv+ed+dDBjmcmYg8hpIUuOOyMZ7CJZ6okwhOcMMji8Qea+dE76Mk8ucJCxzBEfYmakuAtY+TjyVPKFLgcPuXktBg6Qx7zfoXFIezc9JMnF22v6591MobeyKY4Cr0pzkAAAAASUVORK5CYII="/></a> ')
     return new vscode.Hover(md)
   }
 

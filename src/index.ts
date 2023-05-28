@@ -9,6 +9,10 @@ export function activate() {
   const secret = GenerateNames_Secret || _secret
   const appid = GenerateNames_Appid || _appid
   let timer: any = null
+  const colorTheme = vscode.window.activeColorTheme
+  const copyIco = colorTheme.kind === vscode.ColorThemeKind.Light
+    ? 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik01IDIycS0uODI1IDAtMS40MTMtLjU4OFQzIDIwVjZoMnYxNGgxMXYySDVabTQtNHEtLjgyNSAwLTEuNDEzLS41ODhUNyAxNlY0cTAtLjgyNS41ODgtMS40MTNUOSAyaDlxLjgyNSAwIDEuNDEzLjU4OFQyMCA0djEycTAgLjgyNS0uNTg4IDEuNDEzVDE4IDE4SDlabTAtMmg5VjRIOXYxMlptMCAwVjR2MTJaIi8+PC9zdmc+'
+    : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNNSAyMnEtLjgyNSAwLTEuNDEzLS41ODhUMyAyMFY2aDJ2MTRoMTF2Mkg1Wm00LTRxLS44MjUgMC0xLjQxMy0uNTg4VDcgMTZWNHEwLS44MjUuNTg4LTEuNDEzVDkgMmg5cS44MjUgMCAxLjQxMy41ODhUMjAgNHYxMnEwIC44MjUtLjU4OCAxLjQxM1QxOCAxOEg5Wm0wLTJoOVY0SDl2MTJabTAgMFY0djEyWiIvPjwvc3ZnPg=='
   const md = new vscode.MarkdownString()
   md.isTrusted = true
   md.supportHtml = true
@@ -82,7 +86,7 @@ export function activate() {
     copyedText = translated
     md.appendMarkdown(`${isEn ? '中文翻译' : '英文翻译'}: \n`)
     md.appendMarkdown(`\n<a href="https://translate.google.com/?hl=zh-CN&sl=auto&tl=${isEn ? 'zh-CN' : 'en'}&text=${encodeURIComponent(selectedText)}&op=translate">${translated}</a>`)
-    md.appendMarkdown('&nbsp;&nbsp;&nbsp;&nbsp;<a href="command:extension.copyText"><img width="14" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAQCAYAAADwMZRfAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAUGVYSWZNTQAqAAAACAACARIAAwAAAAEAAQAAh2kABAAAAAEAAAAmAAAAAAADoAEAAwAAAAEAAQAAoAIABAAAAAEAAAARoAMABAAAAAEAAAAQAAAAAKEulK8AAAFZaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJYTVAgQ29yZSA2LjAuMCI+CiAgIDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CiAgICAgIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiCiAgICAgICAgICAgIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIj4KICAgICAgICAgPHRpZmY6T3JpZW50YXRpb24+MTwvdGlmZjpPcmllbnRhdGlvbj4KICAgICAgPC9yZGY6RGVzY3JpcHRpb24+CiAgIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+Chle4QcAAACxSURBVDgRrZNRDsMgDENh2r3KTrb0ZM1Oxp4Rk/YRGKtqyaWNIUkNpBSg1mrwgL9gWp6DHEkriTt8RXqPbRpzzo9wTi9vodiDzFG3KpZus4mr2jVJPm2pNXCsVv+ed+dDBjmcmYg8hpIUuOOyMZ7CJZ6okwhOcMMji8Qea+dE76Mk8ucJCxzBEfYmakuAtY+TjyVPKFLgcPuXktBg6Qx7zfoXFIezc9JMnF22v6591MobeyKY4Cr0pzkAAAAASUVORK5CYII="/></a> ')
+    md.appendMarkdown(`&nbsp;&nbsp;&nbsp;&nbsp;<a href="command:extension.copyText"><img width="14" src="${copyIco}"/></a>`)
     return new vscode.Hover(md)
   }
 

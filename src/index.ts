@@ -1,7 +1,9 @@
 import * as vscode from 'vscode'
 import translate from '@simon_he/translate'
+import ClaudeApi from 'anthropic-ai'
 import { cacheMap } from './utils'
 
+// todo: 优化claude返回内容的展示
 export function activate() {
   let copyedText = ''
   const { GenerateNames_Secret, GenerateNames_Appid } = process.env
@@ -27,8 +29,6 @@ export function activate() {
   const decorationType = vscode.window.createTextEditorDecorationType(style)
   vscode.languages.registerHoverProvider('*', {
     provideHover() {
-      if (!secret || !appid)
-        return
       const editor = vscode.window.activeTextEditor
       if (!editor)
         return
@@ -60,17 +60,33 @@ export function activate() {
         return setStyle(isEn, editor, realRangeMap, selectedText, cacheText)
       }
       return new Promise((resolve) => {
-        timer = setTimeout(() => {
-          translate(selectedText, {
-            secret,
-            appid,
-            from: isEn ? 'en' : 'zh',
-            to: isEn ? 'zh' : 'en',
-            salt: '1435660288',
-          }).then((translated) => {
-            cacheMap.set(selectedText, translated)
-            resolve(setStyle(isEn, editor, realRangeMap, selectedText, translated as string))
-          })
+        timer = setTimeout(async () => {
+          // 判断baidu api, 无则使用claude
+          if (secret && appid) {
+            translate(selectedText, {
+              secret,
+              appid,
+              from: isEn ? 'en' : 'zh',
+              to: isEn ? 'zh' : 'en',
+              salt: '1435660288',
+            }).then((translated) => {
+              cacheMap.set(selectedText, translated)
+              resolve(setStyle(isEn, editor, realRangeMap, selectedText, translated as string))
+            })
+          }
+          else {
+            try {
+              const translated = (await aiTransfer(selectedText)).trim()
+              cacheMap.set(selectedText, translated)
+              return resolve(setStyle(undefined, editor, realRangeMap, selectedText, translated))
+            }
+            catch (e) {
+              if (appid && secret)
+                vscode.window.showErrorMessage('请配置appid 和 secret')
+              else
+                vscode.window.showErrorMessage('请配置正确的appid 和 secret')
+            }
+          }
         }, 200)
       })
     },
@@ -80,11 +96,12 @@ export function activate() {
     vscode.env.clipboard.writeText(copyedText)
     vscode.window.showInformationMessage('复制成功')
   })
-  function setStyle(isEn: boolean, editor: vscode.TextEditor, realRangeMap: any[], selectedText: string, translated: string) {
+  function setStyle(isEn: boolean | undefined, editor: vscode.TextEditor, realRangeMap: any[], selectedText: string, translated: string) {
     editor.edit(() => editor.setDecorations(decorationType, realRangeMap.map((item: any) => item.range)))
     md.value = ''
     copyedText = translated
-    md.appendMarkdown(`${isEn ? '中文翻译' : '英文翻译'}: \n`)
+    if (isEn !== undefined)
+      md.appendMarkdown(`${isEn ? '中文翻译' : '英文翻译'}: \n`)
     md.appendMarkdown(`\n<a href="https://translate.google.com/?hl=zh-CN&sl=auto&tl=${isEn ? 'zh-CN' : 'en'}&text=${encodeURIComponent(selectedText)}&op=translate">${translated}</a>`)
     md.appendMarkdown(`&nbsp;&nbsp;&nbsp;&nbsp;<a href="command:extension.copyText"><img width="14" src="${copyIco}"/></a>`)
     return new vscode.Hover(md)
@@ -100,4 +117,11 @@ export function deactivate() {
 const regex = /[\u4E00-\u9FA5]/
 function hasNoChinese(s: string) {
   return !regex.test(s)
+}
+
+function aiTransfer(content: string) {
+  const claude = new ClaudeApi('')
+  return claude.complete(`假设你是一位语言专家,帮我翻译内容\n, 如果我给到的内容有语法或和词汇有问题，请帮我指出\n返回的结果参考:\n"错误或建议: 如果中间存在语法或者单词上的问题在此处指出,如果没有就展示n 中文: 并用修正过的内容进行翻译\n 英文: 并用修正过的内容进行翻译”\n\n${content}`, {
+    model: 'claude-v1.3',
+  })
 }

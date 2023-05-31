@@ -2,7 +2,7 @@
   "publisher": "simonhe",
   "name": "vscode-translate-baidu",
   "displayName": "vscode translate",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "packageManager": "pnpm@8.1.1",
   "description": "vscode-translate",
   "author": "Simon He <https://github.com/Simon-He95>",

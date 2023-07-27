@@ -46,10 +46,11 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.38.4",
+    "@iamtraction/google-translate": "^2.0.1",
     "@simon_he/translate": "^0.0.2",
     "@types/node": "^18.15.11",
     "@types/vscode": "^1.77.0",
-    "anthropic-ai": "^0.0.8",
+    "anthropic-ai": "^0.0.10",
     "bumpp": "^9.1.0",
     "eslint": "^8.37.0",
     "esno": "^0.16.3",

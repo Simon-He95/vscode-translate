@@ -30,6 +30,7 @@ export function activate() {
   vscode.languages.registerHoverProvider('*', {
     provideHover() {
       const editor = vscode.window.activeTextEditor
+
       if (!editor)
         return
       if (timer)
@@ -72,11 +73,20 @@ export function activate() {
             }).then((translated) => {
               cacheMap.set(selectedText, translated)
               resolve(setStyle(isEn, editor, realRangeMap, selectedText, translated as string))
+            }).catch(async () => {
+              try {
+                const translated = (await request(20, selectedText) as string).trim()
+                cacheMap.set(selectedText, translated)
+                return resolve(setStyle(undefined, editor, realRangeMap, selectedText, translated))
+              }
+              catch (e) {
+
+              }
             })
           }
           else {
             try {
-              const translated = (await aiTransfer(selectedText)).trim()
+              const translated = (await request(20, selectedText) as string).trim()
               cacheMap.set(selectedText, translated)
               return resolve(setStyle(undefined, editor, realRangeMap, selectedText, translated))
             }
@@ -118,10 +128,30 @@ const regex = /[\u4E00-\u9FA5]/
 function hasNoChinese(s: string) {
   return !regex.test(s)
 }
+let claude: any
 
-function aiTransfer(content: string) {
-  const claude = new ClaudeApi('')
-  return claude.complete(`假设你是一位语言专家,帮我翻译内容\n, 如果我给到的内容有语法或和词汇有问题，请帮我指出\n返回的结果参考:\n"错误或建议: 如果中间存在语法或者单词上的问题在此处指出,如果没有就展示n 中文: 并用修正过的内容进行翻译\n 英文: 并用修正过的内容进行翻译”\n\n${content}`, {
-    model: 'claude-v1.3',
+function aiTransfer(content: string, en: boolean) {
+  if (!claude)
+    claude = new ClaudeApi('')
+  return claude.complete(`Spell check ${content} and Translate ${content} to ${en ? 'Chinese' : 'English'}`, {
+    model: '1.3',
+  })
+  return claude.complete(`假设你是一位语言专家,帮我翻译内容\n, 如果我给到的内容有语法或和词汇有问题，请帮我指出\n返回的结果参考:\n"错误或建议: 如果中间存在语法或者单词上的问题在此处指出,如果没有就展示\n 中文: 并用修正过的内容进行翻译\n 英文: 并用修正过的内容进行翻译”\n\n${content}`, {
+    model: '1.3',
+  })
+}
+
+function request(times: number, content: string) {
+  return new Promise((resolve) => {
+    let breakFlag = false
+    const isEn = hasNoChinese(content)
+    for (let i = 0; i < times; i++) {
+      if (breakFlag)
+        return
+      aiTransfer(content, isEn).then((translated: string) => {
+        resolve(translated)
+        breakFlag = true
+      })
+    }
   })
 }

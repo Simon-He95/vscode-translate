@@ -1,28 +1,21 @@
-export class LRUCache {
+import fsp from 'node:fs/promises'
+import data from './data.json'
+
+export class Cache {
   private cache
-  private maxSize
-  constructor(maxSize: number) {
+  constructor() {
     this.cache = new Map()
-    this.maxSize = maxSize
+    Object.keys(data).forEach((key) => {
+      const val = (data as any)[key]
+      this.cache.set(key, val)
+    })
   }
 
   get(key: any) {
-    // 获取缓存值，并将其从Map中删除再重新插入，保证其成为最新的元素
-    const value = this.cache.get(key)
-    if (value !== undefined) {
-      this.cache.delete(key)
-      this.cache.set(key, value)
-    }
-    return value
+    return this.cache.get(key)
   }
 
   set(key: any, value: any) {
-    // 如果缓存已满，先删除最旧的元素
-    if (this.cache.size >= this.maxSize) {
-      const oldestKey = this.cache.keys().next().value
-      this.cache.delete(oldestKey)
-    }
-    // 插入新值
     this.cache.set(key, value)
   }
 
@@ -31,8 +24,14 @@ export class LRUCache {
   }
 
   clear() {
+    // 同步更新写入data.json
+    const data = [...this.cache].reduce((result, key: any) => {
+      result[key] = (this.cache as any)[key]
+      return result
+    }, {} as Record<string, string>)
+    fsp.writeFile('./data.json', JSON.stringify(data))
     this.cache.clear()
   }
 }
 
-export const cacheMap = new LRUCache(10000)
+export const cacheMap = new Cache()

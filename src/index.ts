@@ -53,13 +53,13 @@ export function activate() {
       if (!selectedText)
         return
       const isEn = hasNoChinese(selectedText)
-
       if (cacheMap.has(selectedText)) {
         const cacheText = cacheMap.get(selectedText)
         if (!cacheText)
           return
         return setStyle(isEn, editor, realRangeMap, selectedText, cacheText)
       }
+
       return new Promise((resolve) => {
         timer = setTimeout(async () => {
           // 判断baidu api, 无则使用claude
@@ -134,9 +134,6 @@ function aiTransfer(content: string, en: boolean) {
   if (!claude)
     claude = new ClaudeApi('')
   return claude.complete(`Spell check ${content} and Translate ${content} to ${en ? 'Chinese' : 'English'}`, {
-    model: '1.3',
-  })
-  return claude.complete(`假设你是一位语言专家,帮我翻译内容\n, 如果我给到的内容有语法或和词汇有问题，请帮我指出\n返回的结果参考:\n"错误或建议: 如果中间存在语法或者单词上的问题在此处指出,如果没有就展示\n 中文: 并用修正过的内容进行翻译\n 英文: 并用修正过的内容进行翻译”\n\n${content}`, {
     model: '1.3',
   })
 }

@@ -1,15 +1,13 @@
 import * as vscode from 'vscode'
-import translate from '@simon_he/translate'
+import translateLoader from '@simon_he/translate'
 import ClaudeApi from 'anthropic-ai'
+import { addEventListener, createExtension, createStyle, getActiveTextEditor, getConfiguration, getKeyWords, getSelection, registerCommand, registerHoverProvider } from '@vscode-use/utils'
 import { cacheMap } from './utils'
 
-// todo: 优化claude返回内容的展示
-export function activate() {
+export const { activate, deactivate } = createExtension((_, disposals) => {
   let copyedText = ''
-  const { GenerateNames_Secret, GenerateNames_Appid } = process.env
-  const { _secret, _appid, dark = {}, light = {} } = vscode.workspace.getConfiguration('translate') || {}
-  const secret = GenerateNames_Secret || _secret
-  const appid = GenerateNames_Appid || _appid
+  const translate = translateLoader()
+  const { dark = {}, light = {} } = getConfiguration('translate') || {}
   let timer: any = null
   const colorTheme = vscode.window.activeColorTheme
   const copyIco = colorTheme.kind === vscode.ColorThemeKind.Light
@@ -18,6 +16,7 @@ export function activate() {
   const md = new vscode.MarkdownString()
   md.isTrusted = true
   md.supportHtml = true
+
   const style = {
     dark: Object.assign({
       textDecoration: 'underline',
@@ -26,9 +25,11 @@ export function activate() {
       textDecoration: 'underline',
     }, light),
   }
-  const decorationType = vscode.window.createTextEditorDecorationType(style)
-  vscode.languages.registerHoverProvider('*', {
-    provideHover() {
+
+  const decorationType = createStyle(style)
+
+  disposals.push(registerHoverProvider('*',
+    (_, position) => {
       const editor = vscode.window.activeTextEditor
 
       if (!editor)
@@ -36,10 +37,18 @@ export function activate() {
       if (timer)
         clearTimeout(timer)
       // 移除样式
-      vscode.window.activeTextEditor?.setDecorations(decorationType, [])
-      const selection = editor.selection
-      const wordRange = new vscode.Range(selection.start, selection.end) as any
-      const selectedText = editor.document.getText(wordRange)
+      const activeTextEditor = getActiveTextEditor()
+      if (!activeTextEditor)
+        return
+      activeTextEditor.setDecorations(decorationType, [])
+      const selection = getSelection()
+      if (!selection)
+        return
+      const { line, selectedTextArray } = selection
+      const selected = selectedTextArray[0]
+      const wordRange = new vscode.Range(editor.selection.start, editor.selection.end) as any
+      const isUseSelect = selected && line === position.line
+      const selectedText = isUseSelect ? selected : getKeyWords(position)
       if (!selectedText)
         return
 
@@ -62,50 +71,30 @@ export function activate() {
 
       return new Promise((resolve) => {
         timer = setTimeout(async () => {
-          // 判断baidu api, 无则使用claude
-          if (secret && appid) {
-            translate(selectedText, {
-              secret,
-              appid,
-              from: isEn ? 'en' : 'zh',
-              to: isEn ? 'zh' : 'en',
-              salt: '1435660288',
-            }).then((translated) => {
-              cacheMap.set(selectedText, translated)
-              resolve(setStyle(isEn, editor, realRangeMap, selectedText, translated as string))
-            }).catch(async () => {
-              try {
-                const translated = (await request(20, selectedText) as string).trim()
-                cacheMap.set(selectedText, translated)
-                return resolve(setStyle(undefined, editor, realRangeMap, selectedText, translated))
-              }
-              catch (e) {
-
-              }
-            })
-          }
-          else {
+          translate(selectedText).then((translated) => {
+            cacheMap.set(selectedText, translated)
+            resolve(setStyle(isEn, editor, realRangeMap, selectedText, translated as string))
+          }).catch(async () => {
             try {
-              const translated = (await request(20, selectedText) as string).trim()
+              const translated = (await request(2, selectedText) as string).trim()
               cacheMap.set(selectedText, translated)
               return resolve(setStyle(undefined, editor, realRangeMap, selectedText, translated))
             }
             catch (e) {
-              if (appid && secret)
-                vscode.window.showErrorMessage('请配置appid 和 secret')
-              else
-                vscode.window.showErrorMessage('请配置正确的appid 和 secret')
+              console.error('api 请求太频繁')
             }
-          }
+          })
         }, 200)
       })
-    },
-  })
+    }))
 
-  vscode.commands.registerCommand('extension.copyText', () => {
+  disposals.push(registerCommand('extension.copyText', () => {
     vscode.env.clipboard.writeText(copyedText)
     vscode.window.showInformationMessage('复制成功')
-  })
+  }))
+
+  disposals.push(addEventListener('selection-change', () => vscode.window.activeTextEditor?.setDecorations(decorationType, [])))
+
   function setStyle(isEn: boolean | undefined, editor: vscode.TextEditor, realRangeMap: any[], selectedText: string, translated: string) {
     editor.edit(() => editor.setDecorations(decorationType, realRangeMap.map((item: any) => item.range)))
     md.value = ''
@@ -116,13 +105,9 @@ export function activate() {
     md.appendMarkdown(`&nbsp;&nbsp;&nbsp;&nbsp;<a href="command:extension.copyText"><img width="14" src="${copyIco}"/></a>`)
     return new vscode.Hover(md)
   }
-
-  vscode.window.onDidChangeTextEditorSelection(() => vscode.window.activeTextEditor?.setDecorations(decorationType, []))
-}
-
-export function deactivate() {
+}, () => {
   cacheMap.clear()
-}
+})
 
 const regex = /[\u4E00-\u9FA5]/
 function hasNoChinese(s: string) {

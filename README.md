@@ -5,18 +5,6 @@
 
 Vscode Extension  ——  Chinese and English sliding word translation
 
->WIP
-
-## Settings
-```json
-{
-  "translate": {
-    "appid": "Baiduappid",
-    "secret": "Baidusecret"
-  }
-}
-```
-
 ## :coffee:
 
 [buy me a cup of coffee](https://github.com/Simon-He95/sponsor)

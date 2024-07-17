@@ -2,7 +2,7 @@
   "publisher": "simonhe",
   "name": "vscode-translate-simon",
   "displayName": "vscode translate",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "packageManager": "pnpm@8.15.8",
   "description": "vscode-translate",
   "author": "Simon He <https://github.com/Simon-He95>",

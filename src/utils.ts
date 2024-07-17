@@ -35,3 +35,23 @@ export class Cache {
 }
 
 export const cacheMap = new Cache()
+
+export function splitWords(lineText: string, character: number) {
+  let word = ''
+  let start = character
+  let end = character + 1
+  while (!/[\s'"{}]/.test(lineText[start]) && start > 0) {
+    word = lineText[start] + word
+    start--
+  }
+  while (!/[\s'"{}]/.test(lineText[end]) && end < lineText.length) {
+    word += lineText[end]
+    end++
+  }
+  return word
+}
+
+const regex = /[\u4E00-\u9FA5]/
+export function hasNoChinese(s: string) {
+  return !regex.test(s)
+}

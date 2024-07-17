@@ -2,7 +2,7 @@
   "publisher": "simonhe",
   "name": "vscode-translate-simon",
   "displayName": "vscode translate simon",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "packageManager": "pnpm@8.15.8",
   "description": "vscode-translate hover 翻译 + 选中 翻译",
   "author": "Simon He <https://github.com/Simon-He95>",

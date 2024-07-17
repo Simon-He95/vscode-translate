@@ -40,11 +40,11 @@ export function splitWords(lineText: string, character: number) {
   let word = ''
   let start = character
   let end = character + 1
-  while (!/[\s'"{}<>\[\]$]/.test(lineText[start]) && start > 0) {
+  while (!/[\s'"{}<>\[\]\(\)$!]/.test(lineText[start]) && start > 0) {
     word = lineText[start] + word
     start--
   }
-  while (!/[\s'"{}<>\[\]$]/.test(lineText[end]) && end < lineText.length) {
+  while (!/[\s'"{}<>\[\]\(\)$!]/.test(lineText[end]) && end < lineText.length) {
     word += lineText[end]
     end++
   }

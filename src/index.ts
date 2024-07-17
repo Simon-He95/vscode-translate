@@ -67,9 +67,10 @@ export = createExtension((_) => {
 
         return new Promise((resolve) => {
           timer = setTimeout(async () => {
+            const _selectedText = selectedText.replace(/\?\./g, '.')
             const textes = isUseSelect
-              ? [selectedText]
-              : Array.from(new Set([selectedText, ...selectedText.split('/'), ...selectedText.split(/[-_\/]/g)]))
+              ? [_selectedText]
+              : Array.from(new Set([_selectedText, ..._selectedText.split('/').filter(item => /[a-zA-Z]/.test(item) && !/[.:]/.test(item)), ..._selectedText.split(/[-_\/\.:]/g).filter(item => /[a-zA-Z]/.test(item) && !/[-_\/\.:]/.test(item))])).filter(item => item && !/[\.?:]$/.test(item))
             translate(textes).then((translated) => {
               cacheMap.set(selectedText, { textes, translated })
               resolve(setStyle(isEn, editor, realRangeMap, textes, translated))

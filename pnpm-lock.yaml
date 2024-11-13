@@ -21,8 +21,8 @@ importers:
         specifier: ^1.77.0
         version: 1.77.0
       '@vscode-use/utils':
-        specifier: 0.1.10-beta.1
-        version: 0.1.10-beta.1
+        specifier: 0.1.36
+        version: 0.1.36
       bumpp:
         specifier: ^9.4.1
         version: 9.4.1
@@ -428,9 +428,9 @@ packages:
   '@vitest/utils@0.29.8':
     resolution: {integrity: sha512-qGzuf3vrTbnoY+RjjVVIBYfuWMjn3UMUqyQtdGNZ6ZIIyte7B37exj6LaVkrZiUTvzSadVvO/tJm8AEgbGCBPg==}
 
-  '@vscode-use/utils@0.1.10-beta.1':
-    resolution: {integrity: sha512-YCiwzn6rTeouYRwp0gkCTfbh1H2B62bwp7Aym36JmwzuCA2caPpLU5owIWPHuC5BQ9HQaDAJy+EoIY35UNImiw==}
-    engines: {vscode: ^1.77.0}
+  '@vscode-use/utils@0.1.36':
+    resolution: {integrity: sha512-6nBIdBSBg38smhnOqT6SIJuPgZzYTJszafD+QSBSmi4sZoI0zUygviQnBDmEYg6mz0Z6FRGCCVe/BrOLRA2sxA==}
+    engines: {vscode: ^1.92.0}
 
   '@vue/compiler-core@3.2.47':
     resolution: {integrity: sha512-p4D7FDnQb7+YJmO2iPEv0SQNeNzcbHdGByJDsT4lynf63AFkOTFN07HsiRSvjGo0QrxR/o3d0hUyNCUnBU2Tig==}
@@ -1242,6 +1242,7 @@ packages:
   eslint@8.57.0:
     resolution: {integrity: sha512-dZ6+mexnaTIbSBZWgou51U6OmzIhYM2VcNdtiTtI7qPNZm35Akpr0f6vtw3w1Kmn5PYo+tZVfh13WrhpS6oLqQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   esno@0.16.3:
@@ -3174,7 +3175,7 @@ snapshots:
       loupe: 2.3.6
       pretty-format: 27.5.1
 
-  '@vscode-use/utils@0.1.10-beta.1': {}
+  '@vscode-use/utils@0.1.36': {}
 
   '@vue/compiler-core@3.2.47':
     dependencies:

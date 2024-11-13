@@ -37,6 +37,14 @@
   "activationEvents": [
     "onStartupFinished"
   ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "vscode-translate.copyText",
+        "title": "复制文案"
+      }
+    ]
+  },
   "scripts": {
     "dev": "pnpm build --watch",
     "test": "vitest",
@@ -53,7 +61,7 @@
     "@simon_he/translate": "^0.0.6",
     "@types/node": "^18.19.40",
     "@types/vscode": "^1.77.0",
-    "@vscode-use/utils": "0.1.10-beta.1",
+    "@vscode-use/utils": "0.1.36",
     "bumpp": "^9.4.1",
     "eslint": "^8.57.0",
     "esno": "^0.16.3",

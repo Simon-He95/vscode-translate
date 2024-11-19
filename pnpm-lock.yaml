@@ -21,8 +21,8 @@ importers:
         specifier: ^1.77.0
         version: 1.77.0
       '@vscode-use/utils':
-        specifier: 0.1.36
-        version: 0.1.36
+        specifier: 0.1.37
+        version: 0.1.37
       bumpp:
         specifier: ^9.4.1
         version: 9.4.1
@@ -428,8 +428,8 @@ packages:
   '@vitest/utils@0.29.8':
     resolution: {integrity: sha512-qGzuf3vrTbnoY+RjjVVIBYfuWMjn3UMUqyQtdGNZ6ZIIyte7B37exj6LaVkrZiUTvzSadVvO/tJm8AEgbGCBPg==}
 
-  '@vscode-use/utils@0.1.36':
-    resolution: {integrity: sha512-6nBIdBSBg38smhnOqT6SIJuPgZzYTJszafD+QSBSmi4sZoI0zUygviQnBDmEYg6mz0Z6FRGCCVe/BrOLRA2sxA==}
+  '@vscode-use/utils@0.1.37':
+    resolution: {integrity: sha512-0X5DN+3vGF1OLf7el+n9EXsIUOAVL/W1WW43cGEvfmu3mzQzI0qtzM1PwxVKEsdkJ2QQjNQH70ItBG1LaFr0Ug==}
     engines: {vscode: ^1.92.0}
 
   '@vue/compiler-core@3.2.47':
@@ -3175,7 +3175,7 @@ snapshots:
       loupe: 2.3.6
       pretty-format: 27.5.1
 
-  '@vscode-use/utils@0.1.36': {}
+  '@vscode-use/utils@0.1.37': {}
 
   '@vue/compiler-core@3.2.47':
     dependencies:

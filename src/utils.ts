@@ -1,5 +1,4 @@
-import fsp from 'node:fs/promises'
-import data from './data.json'
+const data = {}
 
 export class Cache {
   private cache
@@ -25,11 +24,6 @@ export class Cache {
 
   clear() {
     // 同步更新写入data.json
-    const data = [...this.cache].reduce((result, key: any) => {
-      result[key] = (this.cache as any)[key]
-      return result
-    }, {} as Record<string, string>)
-    fsp.writeFile('./data.json', JSON.stringify(data))
     this.cache.clear()
   }
 }
@@ -40,11 +34,11 @@ export function splitWords(lineText: string, character: number) {
   let word = ''
   let start = character
   let end = character + 1
-  while (!/[\s'"{}<>\[\]\(\)$!`]/.test(lineText[start]) && start >= 0) {
+  while (!/[\s'"{}<>[\]()$!`]/.test(lineText[start]) && start >= 0) {
     word = lineText[start] + word
     start--
   }
-  while (!/[\s'"{}<>\[\]\(\)$!`]/.test(lineText[end]) && end < lineText.length) {
+  while (!/[\s'"{}<>[\]()$!`]/.test(lineText[end]) && end < lineText.length) {
     word += lineText[end]
     end++
   }

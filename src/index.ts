@@ -1,6 +1,6 @@
-import * as vscode from 'vscode'
 import translateLoader from '@simon_he/translate'
 import { addEventListener, createExtension, createMarkdownString, createRange, createStyle, getActiveTextEditor, getConfiguration, getKeyWords, getLineText, getSelection, message, registerCommand, registerHoverProvider, setCommandParams, setCopyText, updateText } from '@vscode-use/utils'
+import * as vscode from 'vscode'
 import { cacheMap, hasNoChinese, splitWords } from './utils'
 
 export = createExtension((_) => {
@@ -21,64 +21,63 @@ export = createExtension((_) => {
   })
 
   return [
-    registerHoverProvider('*',
-      (_, position) => {
-        const editor = vscode.window.activeTextEditor
-        if (!editor)
-          return
-        if (timer)
-          clearTimeout(timer)
+    registerHoverProvider('*', (_, position) => {
+      const editor = getActiveTextEditor()
+      if (!editor)
+        return
+      if (timer)
+        clearTimeout(timer)
         // 移除样式
-        const activeTextEditor = getActiveTextEditor()
-        if (!activeTextEditor)
-          return
-        activeTextEditor.setDecorations(decorationType, [])
-        const selection = getSelection()
-        if (!selection)
-          return
-        const { line, selectedTextArray } = selection
-        const selected = selectedTextArray[0]
-        const wordRange = new vscode.Range(editor.selection.start, editor.selection.end) as any
-        const isUseSelect = selected && line === position.line
-        if (!isUseSelect && getKeyWords(position)?.includes(' '))
-          return
-        const selectedText = isUseSelect ? selectedTextArray[0] : splitWords(getLineText(position.line)!, position.character)
+      const activeTextEditor = getActiveTextEditor()
+      if (!activeTextEditor)
+        return
+      activeTextEditor.setDecorations(decorationType, [])
+      const selection = getSelection()
+      if (!selection)
+        return
+      const { line, selectedTextArray } = selection
+      const selected = selectedTextArray[0]
+      const wordRange = new vscode.Range(editor.selection.start, editor.selection.end) as any
+      const isUseSelect = selected && line === position.line
+      if (!isUseSelect && getKeyWords(position)?.includes(' '))
+        return
+      const selectedText = isUseSelect ? selectedTextArray[0] : splitWords(getLineText(position.line)!, position.character)
 
-        if (!selectedText.length)
+      if (!selectedText.length)
+        return
+
+      const realRangeMap: any = [
+        {
+          content: selectedText,
+          range: wordRange,
+        },
+      ]
+
+      if (!selectedText)
+        return
+      const isEn = hasNoChinese(selectedText)
+      if (cacheMap.has(selectedText)) {
+        const cacheText = cacheMap.get(selectedText)
+        if (!cacheText)
           return
+        return setStyle(isEn, editor, realRangeMap, cacheText.textes, cacheText.translated)
+      }
 
-        const realRangeMap: any = [
-          {
-            content: selectedText,
-            range: wordRange,
-          },
-        ]
-
-        if (!selectedText)
-          return
-        const isEn = hasNoChinese(selectedText)
-        if (cacheMap.has(selectedText)) {
-          const cacheText = cacheMap.get(selectedText)
-          if (!cacheText)
-            return
-          return setStyle(isEn, editor, realRangeMap, cacheText.textes, cacheText.translated)
-        }
-
-        return new Promise((resolve) => {
-          timer = setTimeout(async () => {
-            const _selectedText = selectedText.replace(/\?\./g, '.').replace(/(^[\.\/]|\^|[\/\.~!\/{}\$]$)/, '')
-            const textes = isUseSelect
-              ? [_selectedText]
-              : Array.from(new Set([_selectedText, ..._selectedText.split(/[\/\.:=?,]/g).filter(item => /[a-zA-Z]/.test(item)), ..._selectedText.split(/[-_\/\.:=?,]/g).filter(item => /[a-zA-Z]/.test(item))])).filter(item => item && !/[\.?:=\/]$/.test(item))
-            translate(textes).then((translated) => {
-              cacheMap.set(selectedText, { textes, translated })
-              resolve(setStyle(isEn, editor, realRangeMap, textes, translated))
-            }).catch(() => {
-              console.error('api 请求太频繁')
-            })
-          }, 200)
-        })
-      }),
+      return new Promise((resolve) => {
+        timer = setTimeout(async () => {
+          const _selectedText = selectedText.replace(/\?\./g, '.').replace(/(^[./]|\^|[/.~!{}$]$)/, '')
+          const textes = isUseSelect
+            ? [_selectedText]
+            : Array.from(new Set([_selectedText, ..._selectedText.split(/[/.:=?,]/g).filter(item => /[a-z]/i.test(item)), ..._selectedText.split(/[-_/.:=?,]/g).filter(item => /[a-z]/i.test(item))])).filter(item => item && !/[.?:=/]$/.test(item))
+          translate(textes).then((translated) => {
+            cacheMap.set(selectedText, { textes, translated })
+            resolve(setStyle(isEn, editor, realRangeMap, textes, translated))
+          }).catch(() => {
+            console.error('api 请求太频繁')
+          })
+        }, 200)
+      })
+    }),
     registerCommand('vscode-translate.copyText', (text, isReplaced) => {
       // vscode.env.clipboard.writeText(copyedText)
       if (isReplaced) {

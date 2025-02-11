@@ -1,10 +1,10 @@
 {
   "publisher": "simonhe",
   "name": "vscode-translate-simon",
-  "displayName": "vscode translate simon",
+  "displayName": "VSCode Translate Simon - 翻译插件",
   "version": "0.0.20",
   "packageManager": "pnpm@8.15.9",
-  "description": "vscode-translate hover 翻译 + 选中 翻译",
+  "description": "VSCode Translate - 实时翻译插件，支持悬停翻译和选中翻译",
   "author": "Simon He <https://github.com/Simon-He95>",
   "license": "MIT",
   "funding": "https://github.com/sponsors/Simon-He95",
@@ -21,18 +21,22 @@
   },
   "keywords": [
     "vscode-translate",
-    "translate"
+    "translate",
+    "翻译",
+    "实时翻译",
+    "悬停翻译",
+    "选中翻译",
+    "VSCode 插件"
   ],
   "categories": [
-    "Other"
+    "Other",
+    "Translation",
+    "Productivity"
   ],
   "main": "./dist/index.js",
   "icon": "logo.png",
-  "files": [
-    "dist"
-  ],
   "engines": {
-    "vscode": "^1.95.0"
+    "vscode": "^1.77.0"
   },
   "activationEvents": [
     "onStartupFinished"
@@ -68,6 +72,6 @@
     "tsup": "^6.7.0",
     "typescript": "^5.7.2",
     "vitest": "^0.29.8",
-    "vsce": "^2.15.0"
+    "@vscode/vsce": "^3.2.2"
   }
 }

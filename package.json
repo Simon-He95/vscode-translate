@@ -29,9 +29,7 @@
     "VSCode 插件"
   ],
   "categories": [
-    "Other",
-    "Translation",
-    "Productivity"
+    "Other"
   ],
   "main": "./dist/index.js",
   "icon": "logo.png",

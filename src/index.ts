@@ -41,7 +41,7 @@ export = createExtension((_) => {
       const isUseSelect = selected && line === position.line
       if (!isUseSelect && getKeyWords(position)?.includes(' '))
         return
-      const selectedText = isUseSelect ? selectedTextArray[0] : splitWords(getLineText(position.line)!, position.character)
+      const selectedText = isUseSelect ? selectedTextArray[0] : splitWords(getLineText(position.line) || '', position.character)
 
       if (!selectedText.length)
         return

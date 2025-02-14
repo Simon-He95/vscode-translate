@@ -1,6 +1,6 @@
+import type * as vscode from 'vscode'
 import translateLoader from '@simon_he/translate'
-import { addEventListener, createExtension, createMarkdownString, createRange, createStyle, getActiveTextEditor, getConfiguration, getKeyWords, getLineText, getSelection, message, registerCommand, registerHoverProvider, setCommandParams, setCopyText, updateText } from '@vscode-use/utils'
-import * as vscode from 'vscode'
+import { addEventListener, createExtension, createHover, createMarkdownString, createRange, createStyle, getActiveTextEditor, getConfiguration, getKeyWords, getLineText, getSelection, message, registerCommand, registerHoverProvider, setCommandParams, setCopyText, updateText } from '@vscode-use/utils'
 import { cacheMap, hasNoChinese, splitWords } from './utils'
 
 export = createExtension((_) => {
@@ -22,25 +22,24 @@ export = createExtension((_) => {
 
   return [
     registerHoverProvider('*', (_, position) => {
-      const editor = getActiveTextEditor()
-      if (!editor)
+      const activeTextEditor = getActiveTextEditor()
+      if (!activeTextEditor)
         return
       if (timer)
         clearTimeout(timer)
       // 移除样式
-      const activeTextEditor = getActiveTextEditor()
-      if (!activeTextEditor)
-        return
       activeTextEditor.setDecorations(decorationType, [])
       const selection = getSelection()
       if (!selection)
         return
       const { line, selectedTextArray } = selection
       const selected = selectedTextArray[0]
-      const wordRange = new vscode.Range(editor.selection.start, editor.selection.end) as any
+      const wordRange = createRange(activeTextEditor.selection.start, activeTextEditor.selection.end)
       const isUseSelect = selected && line === position.line
+
       if (!isUseSelect && getKeyWords(position)?.includes(' '))
         return
+
       const selectedText = isUseSelect ? selectedTextArray[0] : splitWords(getLineText(position.line) || '', position.character)
 
       if (!selectedText.length)
@@ -55,12 +54,13 @@ export = createExtension((_) => {
 
       if (!selectedText)
         return
+
       const isEn = hasNoChinese(selectedText)
       if (cacheMap.has(selectedText)) {
         const cacheText = cacheMap.get(selectedText)
         if (!cacheText)
           return
-        return setStyle(isEn, editor, realRangeMap, cacheText.textes, cacheText.translated)
+        return setStyle(isEn, activeTextEditor, realRangeMap, cacheText.textes, cacheText.translated)
       }
 
       return new Promise((resolve) => {
@@ -71,7 +71,7 @@ export = createExtension((_) => {
             : Array.from(new Set([_selectedText, ..._selectedText.split(/[/.:=?,]/g).filter(item => /[a-z]/i.test(item)), ..._selectedText.split(/[-_/.:=?,]/g).filter(item => /[a-z]/i.test(item))])).filter(item => item && !/[.?:=/]$/.test(item))
           translate(textes).then((translated) => {
             cacheMap.set(selectedText, { textes, translated })
-            resolve(setStyle(isEn, editor, realRangeMap, textes, translated))
+            resolve(setStyle(isEn, activeTextEditor, realRangeMap, textes, translated))
           }).catch(() => {
             console.error('api 请求太频繁')
           })
@@ -111,7 +111,7 @@ export = createExtension((_) => {
       const variableIcon = '<img width="14" height="14" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjMDU3ZWYwIiBkPSJNMjAuNDEgM2MxLjM5IDIuNzEgMS45NCA1Ljg0IDEuNTkgOWMtLjIgMy4xNi0xLjMgNi4yOS0zLjE3IDlsLTEuNTMtMWMxLjYxLTIuNDMgMi41NS01LjIgMi43LThjLjM0LTIuOC0uMTEtNS41Ny0xLjMtOHpNNS4xNyAzTDYuNyA0QzUuMDkgNi40MyA0LjE1IDkuMiA0IDEyYy0uMzQgMi44LjEyIDUuNTcgMS4zIDhsLTEuNjkgMWMtMS40LTIuNzEtMS45Ni01LjgzLTEuNjEtOWMuMi0zLjE2IDEuMy02LjI5IDMuMTctOW02LjkxIDcuNjhsMi4zMi0zLjIzaDIuNTNsLTMuNzggNWwyLjIgNC45MmgtMi4yNkwxMS43MSAxNGwtMi40MyAzLjMzSDYuNzZsMy45LTUuMTJsLTIuMTMtNC43NmgyLjI3eiIvPjwvc3ZnPg==" />'
       md.appendMarkdown(`- ${originText}: ${translatedText} &nbsp;&nbsp;&nbsp;&nbsp;<a href="command:vscode-translate.copyText?${setCommandParams([translatedText])}">${copyIcon}</a>&nbsp;&nbsp;&nbsp;<a href="command:vscode-translate.copyText?${setCommandParams([translatedText, true])}">${pasteIcon}</a>&nbsp;&nbsp;&nbsp;<a href="command:vscode-translate.copyText?${setCommandParams([translatedText.replace(/\s+(\w)/g, (_, v) => v.toUpperCase())])}">${variableIcon}</a>\n\n`)
     }
-    return new vscode.Hover(md)
+    return createHover(md)
   }
 }, () => {
   cacheMap.clear()

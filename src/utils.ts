@@ -49,3 +49,24 @@ const regex = /[\u4E00-\u9FA5]/
 export function hasNoChinese(s: string) {
   return !regex.test(s)
 }
+
+export function fixedVariableName(result: string, isLarge?: boolean) {
+  result = result.replace(/the/gi, '').trim()
+  if (result.includes('and')) {
+    result = result.split('and')[0]
+  }
+  // 如果存在 of 则颠倒
+  if (result.includes(' of ')) {
+    const [A, B] = result.split(' of ')
+    result = `${B} ${A}`
+  }
+  return isLarge ? toLargeVariableName(result.replace(/\([^)]+\)/g, '').trim()) : toVariableName(result.replace(/\([^)]+\)/g, '').trim())
+}
+
+function toVariableName(name: string) {
+  return name[0].toLowerCase() + name.slice(1).replace(/\s+(\w)/g, (_, v) => v.toUpperCase())
+}
+
+function toLargeVariableName(name: string) {
+  return name[0].toUpperCase() + name.slice(1).replace(/\s+(\w)/g, (_, v) => v.toUpperCase())
+}

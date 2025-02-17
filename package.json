@@ -2,7 +2,7 @@
   "publisher": "simonhe",
   "name": "vscode-translate-simon",
   "displayName": "VSCode Translate Simon - 翻译插件",
-  "version": "0.0.24",
+  "version": "0.0.25",
   "packageManager": "pnpm@8.15.9",
   "description": "VSCode Translate - 实时翻译插件，支持悬停翻译和选中翻译",
   "author": "Simon He <https://github.com/Simon-He95>",

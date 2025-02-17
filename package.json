@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.16.0",
-    "@simon_he/translate": "^0.0.6",
+    "@simon_he/translate": "^0.0.9",
     "@types/node": "^18.19.76",
     "@types/vscode": "1.77.0",
     "@vscode-use/utils": "0.1.47",

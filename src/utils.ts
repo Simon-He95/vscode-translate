@@ -70,3 +70,20 @@ function toVariableName(name: string) {
 function toLargeVariableName(name: string) {
   return name[0].toUpperCase() + name.slice(1).replace(/\s+(\w)/g, (_, v) => v.toUpperCase())
 }
+
+/**
+ * Escapes special Markdown characters in a string and handles HTML tags
+ */
+export function escapeMarkdown(text: string): string {
+  if (!text)
+    return ''
+
+  // First check if there are HTML-like tags
+  if (text.includes('<') && text.includes('>')) {
+    // For HTML content, use code formatting with backticks
+    return `\`${text.replace(/`/g, '\\`')}\``
+  }
+
+  // Otherwise escape Markdown special characters
+  return text.replace(/([\\`*_{}[\]()#+\-.!|])/g, '\\$1')
+}

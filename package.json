@@ -61,15 +61,15 @@
   "devDependencies": {
     "@antfu/eslint-config": "^3.16.0",
     "@simon_he/translate": "^0.0.10",
-    "@types/node": "^18.19.81",
+    "@types/node": "^18.19.111",
     "@types/vscode": "1.77.0",
     "@vscode-use/utils": "0.1.47",
-    "@vscode/vsce": "^3.3.0",
+    "@vscode/vsce": "^3.5.0",
     "bumpp": "^9.11.1",
     "eslint": "^8.57.1",
     "pnpm": "^8.15.9",
     "tsup": "^6.7.0",
-    "typescript": "^5.8.2",
+    "typescript": "^5.8.3",
     "vitest": "^0.29.8"
   }
 }

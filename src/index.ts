@@ -21,7 +21,9 @@ export = createExtension((_) => {
   })
 
   return [
-    registerHoverProvider('*', (_, position) => {
+    registerHoverProvider('*', (document, position) => {
+      if (document.fileName === 'exthost')
+        return
       const activeTextEditor = getActiveTextEditor()
       if (!activeTextEditor)
         return
@@ -94,7 +96,11 @@ export = createExtension((_) => {
       setCopyText(text)
       message.info('复制成功')
     }),
-    addEventListener('selection-change', () => getActiveTextEditor()?.setDecorations(decorationType, [])),
+    addEventListener('selection-change', (e) => {
+      if (e.textEditor.document.fileName === 'exthost')
+        return
+      e.textEditor.setDecorations(decorationType, [])
+    }),
   ]
   function setStyle(isEn: boolean | undefined, editor: vscode.TextEditor, realRangeMap: any[], textes: string[], translated: string[]) {
     editor.edit(() => editor.setDecorations(decorationType, realRangeMap.map((item: any) => item.range)))

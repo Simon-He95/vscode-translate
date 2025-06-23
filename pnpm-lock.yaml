@@ -12,8 +12,8 @@ importers:
         specifier: ^3.16.0
         version: 3.16.0(@typescript-eslint/utils@8.34.1(eslint@8.57.1)(typescript@5.8.3))(@vue/compiler-sfc@3.5.17)(eslint@8.57.1)(typescript@5.8.3)(vitest@3.2.4(@types/debug@4.1.12)(@types/node@18.19.112)(jiti@2.4.2)(yaml@2.8.0))
       '@simon_he/translate':
-        specifier: ^0.0.12
-        version: 0.0.12
+        specifier: ^0.0.13
+        version: 0.0.13
       '@types/node':
         specifier: ^18.19.112
         version: 18.19.112
@@ -728,8 +728,8 @@ packages:
     resolution: {integrity: sha512-z9rdKHNeL4xa48+367RQJVw1d7/Js9HIQ+gTs/angzteM9osfgs59ad3iwVRhCGYbeUoUUDe2yxJG2ylYLaH3Q==}
     engines: {node: ^14.13.1 || >=16.0.0}
 
-  '@simon_he/translate@0.0.12':
-    resolution: {integrity: sha512-nr4uefAKiXW7wiIA7eXYM+20Cg+aOop/AVqXAotU7QWW6SxydsRcpMs8RoER8hxBJ9u0++jlWgEzsJ2sqMBkoQ==}
+  '@simon_he/translate@0.0.13':
+    resolution: {integrity: sha512-QVU8Z5w9w5tF0PoI318eZlSa9e1UAyLVq+Odhiz5BGo1FWaFJvQi4p3Kzis0oj+gWUqrRoW7tk9KXyuBbrwUTQ==}
     engines: {node: '>=14.0.0'}
     cpu: [x64, arm64]
     os: [darwin, linux, win32]
@@ -4026,7 +4026,7 @@ snapshots:
 
   '@secretlint/types@9.3.4': {}
 
-  '@simon_he/translate@0.0.12': {}
+  '@simon_he/translate@0.0.13': {}
 
   '@sindresorhus/merge-streams@2.3.0': {}
 

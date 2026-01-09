@@ -44,8 +44,87 @@
       {
         "command": "vscode-translate.copyText",
         "title": "复制文案"
+      },
+      {
+        "command": "vscode-translate.checkLocalModel",
+        "title": "检查本地模型配置"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "translate",
+      "properties": {
+        "translate.useLocal": {
+          "type": "boolean",
+          "default": false,
+          "description": "Use local translate server (offline)"
+        },
+        "translate.local.autoStart": {
+          "type": "boolean",
+          "default": true,
+          "description": "Auto start local translate server on VS Code startup"
+        },
+        "translate.local.url": {
+          "type": "string",
+          "default": "",
+          "description": "Local translate server base URL (e.g. http://127.0.0.1:5000). If set and reachable, extension will reuse it."
+        },
+        "translate.local.command": {
+          "type": "string",
+          "default": "python3 -u local_server/app.py --host 127.0.0.1 --port 0",
+          "description": "Command to start the local translate server (run from extension folder)."
+        },
+        "translate.local.startupTimeoutMs": {
+          "type": "number",
+          "default": 30000,
+          "description": "Max time to wait for local server to become ready"
+        },
+        "translate.local.requestTimeoutMs": {
+          "type": "number",
+          "default": 20000,
+          "description": "HTTP request timeout when calling local server"
+        },
+        "translate.local.idleTimeoutMs": {
+          "type": "number",
+          "default": 0,
+          "description": "Idle timeout for local server; 0 disables auto-exit"
+        },
+        "translate.local.maxRestart": {
+          "type": "number",
+          "default": 2,
+          "description": "Max restart attempts for local server within a session"
+        },
+        "translate.local.offline": {
+          "type": "boolean",
+          "default": false,
+          "description": "Offline mode: do not download models; require models to be present locally"
+        },
+        "translate.local.model.root": {
+          "type": "string",
+          "default": "",
+          "description": "Optional model root directory. If set, server will try <root>/en-zh and <root>/zh-en"
+        },
+        "translate.local.model.enZh": {
+          "type": "string",
+          "default": "",
+          "description": "Model name or local path for EN->ZH (e.g. Helsinki-NLP/opus-mt-en-zh or /abs/path/to/model)"
+        },
+        "translate.local.model.zhEn": {
+          "type": "string",
+          "default": "",
+          "description": "Model name or local path for ZH->EN (e.g. Helsinki-NLP/opus-mt-zh-en or /abs/path/to/model)"
+        },
+        "translate.dark": {
+          "type": "object",
+          "default": {},
+          "description": "Decoration style overrides for dark theme"
+        },
+        "translate.light": {
+          "type": "object",
+          "default": {},
+          "description": "Decoration style overrides for light theme"
+        }
+      }
+    }
   },
   "scripts": {
     "dev": "pnpm build --watch",

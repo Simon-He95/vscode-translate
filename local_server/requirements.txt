@@ -1,0 +1,5 @@
+flask>=2.2
+transformers>=4.35
+sentencepiece>=0.1.99
+# torch is required by transformers pipeline; install per your platform:
+# pip install torch
